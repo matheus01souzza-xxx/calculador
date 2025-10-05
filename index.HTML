@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Macronutrientes</title>
+<style>
+  :root {
+    --azul-mergulho: #007b9e;
+    --azul-claro: #b9ecf9;
+    --branco: #ffffff;
+    --vermelho-suave: #ff6b6b;
+  }
+
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, var(--azul-mergulho) 0%, var(--azul-claro) 100%);
+    min-height: 100vh;
+    color: #033d4a;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 30px 10px;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 800px;
+    background: linear-gradient(180deg, var(--branco) 0%, #f8fcfd 100%);
+    border-radius: 15px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    padding: 25px;
+  }
+
+  h1 {
+    text-align: center;
+    color: var(--azul-mergulho);
+    margin-bottom: 25px;
+    font-size: 1.7em;
+  }
+
+  h2 {
+    color: var(--azul-mergulho);
+    margin-bottom: 10px;
+    border-left: 4px solid var(--azul-mergulho);
+    padding-left: 10px;
+    font-size: 1.2em;
+  }
+
+  input, select {
+    margin: 6px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #cce5ea;
+    background: #ffffffd9;
+    font-size: 0.95em;
+    width: 100%;
+    box-sizing: border-box;
+    transition: all 0.2s;
+  }
+
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--azul-mergulho);
+    box-shadow: 0 0 5px rgba(0, 123, 158, 0.4);
+  }
+
+  button {
+    margin: 8px 0;
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: none;
+    background: linear-gradient(90deg, var(--azul-mergulho), #00b7d6);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  button:hover {
+    transform: scale(1.03);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+  }
+
+  .delete-btn {
+    background: var(--vermelho-suave);
+    color: white;
+    font-weight: bold;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .delete-btn:hover {
+    background: #ff4d4d;
+    transform: scale(1.05);
+  }
+
+  .section {
+    background: #ffffffec;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  th {
+    background-color: var(--azul-mergulho);
+    color: white;
+    padding: 10px;
+    font-size: 0.9em;
+  }
+
+  td {
+    padding: 8px;
+    border-bottom: 1px solid #d7e8ec;
+    text-align: center;
+    font-size: 0.9em;
+  }
+
+  #resumo {
+    font-weight: bold;
+    background: linear-gradient(90deg, #e8fdfc, #f0ffff);
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+    color: #033d4a;
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.05);
+  }
+
+  /* Lista de alimentos cadastrados */
+  #listaCadastrados {
+    margin-top: 15px;
+  }
+
+  #listaCadastrados li {
+    display: flex;
+    justify-content: space-between;
+    background: #f0f9fa;
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    border-radius: 6px;
+    font-size: 0.9em;
+    color: #033d4a;
+  }
+
+  /* Responsivo */
+  @media (max-width: 768px) {
+    table, thead, tbody, th, td, tr {
+      display: block;
+    }
+    thead {
+      display: none;
+    }
+    tr {
+      margin-bottom: 10px;
+      background: #f7fbfc;
+      border-radius: 10px;
+      padding: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    td {
+      text-align: left;
+      border: none;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9em;
+      padding: 6px 4px;
+    }
+    td::before {
+      content: attr(data-label);
+      font-weight: bold;
+      color: var(--azul-mergulho);
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>🍎 Calculadora de Macronutrientes</h1>
+
+  <div class="section">
+    <h2>Cadastrar Alimento</h2>
+    <input type="text" id="nome" placeholder="Nome do alimento">
+    <input type="number" id="peso" placeholder="Peso médio (g) por unidade">
+    <input type="number" id="calorias" placeholder="Calorias (por 100g)">
+    <input type="number" id="carboidratos" placeholder="Carboidratos (g)">
+    <input type="number" id="proteinas" placeholder="Proteínas (g)">
+    <input type="number" id="gorduras" placeholder="Gorduras (g)">
+    <button onclick="salvarAlimento()">Salvar</button>
+
+    <ul id="listaCadastrados"></ul>
+  </div>
+
+  <div class="section">
+    <h2>Selecionar Alimento Consumido</h2>
+    <select id="alimentoSelect"></select>
+    <input type="number" id="quantidade" placeholder="Quantidade (unidades)">
+    <button onclick="adicionarConsumo()">Adicionar</button>
+
+    <h3>Lista de Consumo</h3>
+    <table id="tabelaConsumo">
+      <thead>
+        <tr>
+          <th>Alimento</th>
+          <th>Qtd (unid)</th>
+          <th>Calorias</th>
+          <th>Carboidratos</th>
+          <th>Proteínas</th>
+          <th>Gorduras</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="section" id="resumo">
+    <h2>Resumo Total</h2>
+    <p id="totais">Calorias: 0 | Carboidratos: 0g | Proteínas: 0g | Gorduras: 0g</p>
+  </div>
+</div>
+
+<script>
+  let alimentos = JSON.parse(localStorage.getItem('alimentos')) || [];
+  let consumo = [];
+
+  function salvarAlimento() {
+    const nome = document.getElementById('nome').value.trim();
+    const peso = parseFloat(document.getElementById('peso').value);
+    const calorias = parseFloat(document.getElementById('calorias').value);
+    const carboidratos = parseFloat(document.getElementById('carboidratos').value);
+    const proteinas = parseFloat(document.getElementById('proteinas').value);
+    const gorduras = parseFloat(document.getElementById('gorduras').value);
+
+    if (!nome || isNaN(peso) || isNaN(calorias) || isNaN(carboidratos) || isNaN(proteinas) || isNaN(gorduras)) {
+      alert('Preencha todos os campos corretamente!');
+      return;
+    }
+
+    alimentos.push({ nome, peso, calorias, carboidratos, proteinas, gorduras });
+    localStorage.setItem('alimentos', JSON.stringify(alimentos));
+    atualizarSelect();
+    atualizarListaCadastrados();
+    alert('Alimento salvo com sucesso!');
+    document.querySelectorAll('#nome, #peso, #calorias, #carboidratos, #proteinas, #gorduras')
+      .forEach(el => el.value = '');
+  }
+
+  function atualizarSelect() {
+    const select = document.getElementById('alimentoSelect');
+    select.innerHTML = '';
+    alimentos.forEach((a, i) => {
+      const option = document.createElement('option');
+      option.value = i;
+      option.textContent = `${a.nome} (${a.peso}g/unid)`;
+      select.appendChild(option);
+    });
+  }
+
+  function atualizarListaCadastrados() {
+    const lista = document.getElementById('listaCadastrados');
+    lista.innerHTML = '';
+    alimentos.forEach((a, i) => {
+      const li = document.createElement('li');
+      li.innerHTML = `
+        ${a.nome} (${a.peso}g/unid)
+        <button class="delete-btn" onclick="excluirAlimento(${i})">🗑️</button>
+      `;
+      lista.appendChild(li);
+    });
+  }
+
+  function excluirAlimento(index) {
+    if (confirm(`Deseja excluir "${alimentos[index].nome}"?`)) {
+      alimentos.splice(index, 1);
+      localStorage.setItem('alimentos', JSON.stringify(alimentos));
+      atualizarSelect();
+      atualizarListaCadastrados();
+    }
+  }
+
+  function adicionarConsumo() {
+    const idx = document.getElementById('alimentoSelect').value;
+    const qtd = parseFloat(document.getElementById('quantidade').value);
+
+    if (idx === '' || isNaN(qtd) || qtd <= 0) {
+      alert('Selecione um alimento e informe a quantidade.');
+      return;
+    }
+
+    const a = alimentos[idx];
+    const fator = (a.peso * qtd) / 100;
+
+    const item = {
+      nome: a.nome,
+      qtd,
+      calorias: a.calorias * fator,
+      carboidratos: a.carboidratos * fator,
+      proteinas: a.proteinas * fator,
+      gorduras: a.gorduras * fator
+    };
+
+    consumo.push(item);
+    atualizarTabela();
+  }
+
+  function atualizarTabela() {
+    const tbody = document.querySelector('#tabelaConsumo tbody');
+    tbody.innerHTML = '';
+
+    let totalCal = 0, totalCarb = 0, totalProt = 0, totalGord = 0;
+
+    consumo.forEach(item => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td data-label="Alimento">${item.nome}</td>
+        <td data-label="Qtd (unid)">${item.qtd}</td>
+        <td data-label="Calorias">${item.calorias.toFixed(1)}</td>
+        <td data-label="Carboidratos">${item.carboidratos.toFixed(1)}</td>
+        <td data-label="Proteínas">${item.proteinas.toFixed(1)}</td>
+        <td data-label="Gorduras">${item.gorduras.toFixed(1)}</td>
+      `;
+      tbody.appendChild(tr);
+
+      totalCal += item.calorias;
+      totalCarb += item.carboidratos;
+      totalProt += item.proteinas;
+      totalGord += item.gorduras;
+    });
+
+    document.getElementById('totais').textContent =
+      `Calorias: ${totalCal.toFixed(1)} | Carboidratos: ${totalCarb.toFixed(1)}g | Proteínas: ${totalProt.toFixed(1)}g | Gorduras: ${totalGord.toFixed(1)}g`;
+  }
+
+  atualizarSelect();
+  atualizarListaCadastrados();
+</script>
+
+</body>
+</html>
